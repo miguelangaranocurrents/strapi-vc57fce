@@ -750,9 +750,14 @@ const RelationModalWithContext = ({
 
   const options = data?.results ?? [];
 
+  /**
+   * Once a relation is selected the input text is cleared, so the search must be cleared too,
+   * otherwise the next list is filtered by a term the user can no longer see.
+   */
   React.useLayoutEffect(() => {
     setTextValue('');
-  }, [fieldValue]);
+    setSearchParams((s) => (s._q === '' && s.page === 1 ? s : { ...s, _q: '', page: 1 }));
+  }, [fieldValue, setSearchParams]);
 
   const handleSearch = async (search: string) => {
     setSearchParams((s) => ({ ...s, _q: search, page: 1 }));

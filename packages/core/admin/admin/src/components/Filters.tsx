@@ -187,7 +187,17 @@ const PopoverImpl = ({ zIndex }: { zIndex?: number }) => {
   }
 
   const handleSubmit = (data: FilterFormData) => {
-    const value = FILTERS_WITH_NO_VALUE.includes(data.filter) ? 'true' : (data.value ?? '');
+    /**
+     * A boolean toggle that was never touched is displayed as "False", so that is the value we
+     * filter on. Values are stringified because `false` is falsy and would otherwise be dropped.
+     */
+    const isBooleanField = options.find((filter) => filter.name === data.name)?.type === 'boolean';
+    const rawValue = data.value ?? (isBooleanField ? false : undefined);
+    const value = FILTERS_WITH_NO_VALUE.includes(data.filter)
+      ? 'true'
+      : rawValue === undefined || rawValue === null
+        ? ''
+        : String(rawValue);
 
     if (!value) {
       return;
